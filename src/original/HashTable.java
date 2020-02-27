@@ -38,7 +38,6 @@ public class HashTable {
                     temp = temp.next;
                     if (temp.key.equals(key)) {
                         temp.value=hashEntry.value;
-                        temp.key = hashEntry.key;
                         modificado = false;
                         return;
                     }
@@ -90,7 +89,8 @@ public class HashTable {
     private int getHash(String key) {
         // piggy backing on java string
         // hashcode implementation.
-        return key.hashCode() % INITIAL_SIZE;
+        // Ya no hay numeros negativos :)
+        return Math.abs(key.hashCode()) % INITIAL_SIZE;
     }
 
     private class HashEntry {
