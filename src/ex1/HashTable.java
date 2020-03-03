@@ -1,14 +1,14 @@
-package original;
+package ex1;
 
 // Original source code: https://gist.github.com/amadamala/3cdd53cb5a6b1c1df540981ab0245479
 // Modified by Fernando Porrino Serrano for academic purposes.
 
 import java.util.ArrayList;
-import java.util.Objects;
 
 public class HashTable {
     private int INITIAL_SIZE = 16;
     private int size = 0;
+    private boolean modificado = true;
     private HashEntry[] entries = new HashEntry[INITIAL_SIZE];
 
     public int size(){
@@ -28,11 +28,27 @@ public class HashTable {
         }
         else {
             HashEntry temp = entries[hash];
-            while(temp.next != null)
-                temp = temp.next;
-
-            temp.next = hashEntry;
-            hashEntry.prev = temp;
+            if (temp.key.equals(key)) {
+                temp.value=hashEntry.value;
+                modificado = false;
+            }
+            else {
+                while (temp.next != null) {
+                    temp = temp.next;
+                    if (temp.key.equals(key)) {
+                        temp.value=hashEntry.value;
+                        modificado = false;
+                        return;
+                    }
+                }
+                temp.next = hashEntry;
+                hashEntry.prev = temp;
+            }
+        }
+        //Primera reparacion
+        //El size no se iba incrementando (de la tabla de hash)
+        if (modificado) {
+            size++;
         }
     }
 
@@ -44,9 +60,13 @@ public class HashTable {
         if(entries[hash] != null) {
             HashEntry temp = entries[hash];
 
-            while( !temp.key.equals(key))
-                temp = temp.next;
+            while(!temp.key.equals(key)) {
+                if (temp.next == null) {
 
+                    return null;
+                }
+                temp = temp.next;
+            }
             return temp.value;
         }
 
@@ -72,7 +92,8 @@ public class HashTable {
     private int getHash(String key) {
         // piggy backing on java string
         // hashcode implementation.
-        return key.hashCode() % INITIAL_SIZE;
+        // Ya no hay numeros negativos :)
+        return Math.abs(key.hashCode()) % INITIAL_SIZE;
     }
 
     private class HashEntry {
@@ -82,6 +103,7 @@ public class HashTable {
         // Linked list of same hash entries.
         HashEntry next;
         HashEntry prev;
+
 
         public HashEntry(String key, String value) {
             this.key = key;
