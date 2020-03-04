@@ -28,15 +28,30 @@ public class HashTable {
         }
         else {
             HashEntry temp = entries[hash];
+            // Al hacer un put de un elemento que ya existe
+            // se debería modificar y no borrar el nuevo valor
+            // y dejar el anterior, y con esto lo que hago
+            // es comparar la key de la hashTable con la
+            // que quiero añadir y modifico el valor (es lo único que cambia)
             if (temp.key.equals(key)) {
                 temp.value=hashEntry.value;
+                // En el caso de estar modificando un valor el
+                // size no deberia incrementarse
                 modificado = false;
             }
             else {
                 while (temp.next != null) {
                     temp = temp.next;
+                    // Al hacer un put de un elemento colisionado
+                    // que ya existe se debería modificar y no borrar
+                    // el nuevo valor y dejar el anterior, y con esto
+                    // lo que hago es comparar la key de la hashTable con
+                    // la que quiero añadir y modifico el valor
                     if (temp.key.equals(key)) {
                         temp.value=hashEntry.value;
+                        // Con la variable modificado puedo saber cuando
+                        // estoy añadiendo un key que ya existe y se esta
+                        // modificando, por lo tanto el size no debería sumar
                         modificado = false;
                         return;
                     }
@@ -45,8 +60,8 @@ public class HashTable {
                 hashEntry.prev = temp;
             }
         }
-        //Primera reparacion
-        //El size no se iba incrementando (de la tabla de hash)
+        // El size no se iba incrementando, por lo tanto cuando
+        // se añadia un elemento es como si no lo hiciera
         if (modificado) {
             size++;
         }
@@ -61,10 +76,9 @@ public class HashTable {
             HashEntry temp = entries[hash];
 
             while(!temp.key.equals(key)) {
-                if (temp.next == null) {
-
-                    return null;
-                }
+                // Al intentar hacer un get de una key que no tiene valor y
+                // es el ultimo elemento colisionado nos da un NullPointer
+                if (temp.next == null) return null;
                 temp = temp.next;
             }
             return temp.value;

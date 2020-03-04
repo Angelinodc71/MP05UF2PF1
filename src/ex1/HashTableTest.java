@@ -45,26 +45,84 @@ class HashTableTest {
 
     @Test
     void put() {
-        Assertions.assertEquals("", hashTable.toString());
-//        hashTable.put("0", "Tomas Turbao");
-        hashTable.put("1", "Tomas Turbao");
-        hashTable.put("2", "Elsa Capuntas");
-        hashTable.put("1", "Elsa Pato");
-        hashTable.put("12", "Koko");
-        hashTable.put("12", "VINNNN DISELLLLL");
-        hashTable.put("67","Tomas Apuntes");
-        Assertions.assertEquals("\n bucket[1] = [1, Elsa Pato] -> [12, VINNNN DISELLLLL] -> [67, Tomas Apuntes]" +
-                "\n bucket[2] = [2, Elsa Capuntas]", hashTable.toString());
-        System.out.println(hashTable.size());
-        Assertions.assertEquals(2, hashTable.size());
-        hashTable.put("11", "Hola guapo");
-        hashTable.put("22", "Hola feo");
-        hashTable.put("12", "LA PAMPARAAAAA");
-        hashTable.put("33", "Esto sa mamao");
-        hashTable.put("2", "Pica Chu");
+        // 1. En la primera prueba quiero probar que en el caso
+        // añadir un primer elemento se añada correctamente
+        hashTable.put("Coronavirus","11888");
 
-        System.out.println(hashTable);
-        System.out.println(hashTable.getCollisionsForKey("3",5));
+        Assertions.assertEquals("\n bucket[1] = [Coronavirus, 11888]", hashTable.toString());
+
+        // 2. Probamos a modificar el primer elemento añadido
+        hashTable.put("Coronavirus","god");
+
+        Assertions.assertEquals("\n bucket[1] = [Coronavirus, god]", hashTable.toString());
+
+        // 3. Añadimos diferentes elementos con diferentes,
+        // hash. Se deberian añadir en diferentes buckets
+        hashTable.put("Hola","guapo");
+        hashTable.put("Adios","Feo");
+
+        Assertions.assertEquals("\n bucket[1] = [Coronavirus, god]" +
+                "\n bucket[10] = [Adios, Feo]" +
+                "\n bucket[12] = [Hola, guapo]",hashTable.toString());
+
+        // 4. Añadiendo diferentes elementos con el mismo
+        // hash el resultado deberia ser una colision.
+        // Los elementos colisionaran con un elemento ya creado
+        hashTable.put("1","Vin Disell");
+        hashTable.put("01","Maik Tagüers");
+        hashTable.put("12","Maluma beibe");
+        hashTable.put("23","Conejo Bad");
+
+        Assertions.assertEquals("\n bucket[1] = [Coronavirus, god] -> [1, Vin Disell] -> [01, Maik Tagüers] -> [12, Maluma beibe] -> [23, Conejo Bad]" +
+                "\n bucket[10] = [Adios, Feo]" +
+                "\n bucket[12] = [Hola, guapo]",hashTable.toString());
+
+        // 5. Añadiendo diferentes elementos con el mismo
+        // hash el resultado deberia ser una colision.
+        // Los elementos colisionaran con un elemento nuevo
+        hashTable.put("Coronao","Coronaoooooo");
+        hashTable.put("30","Coronaooo");
+        hashTable.put("41","Coronaoooo");
+        hashTable.put("52","Coronaoooo");
+
+        Assertions.assertEquals("\n bucket[1] = [Coronavirus, god] -> [1, Vin Disell] -> [01, Maik Tagüers] -> [12, Maluma beibe] -> [23, Conejo Bad]" +
+                "\n bucket[10] = [Adios, Feo]" +
+                "\n bucket[12] = [Hola, guapo]" +
+                "\n bucket[13] = [Coronao, Coronaoooooo] -> [30, Coronaooo] -> [41, Coronaoooo] -> [52, Coronaoooo]",hashTable.toString());
+
+        // 6. Y por ultimo probamos a modificar diferentes
+        // elementos colisionados, en diferentes buckets y
+        // con diferentes indices
+
+        // 6.1 Probamos a modificar un elemento colisionado
+        // en la mitad
+        hashTable.put("30","Coronavirusssss");
+        hashTable.put("01","Sakuraaaaa");
+
+        Assertions.assertEquals("\n bucket[1] = [Coronavirus, god] -> [1, Vin Disell] -> [01, Sakuraaaaa] -> [12, Maluma beibe] -> [23, Conejo Bad]" +
+                "\n bucket[10] = [Adios, Feo]" +
+                "\n bucket[12] = [Hola, guapo]" +
+                "\n bucket[13] = [Coronao, Coronaoooooo] -> [30, Coronavirusssss] -> [41, Coronaoooo] -> [52, Coronaoooo]",hashTable.toString());
+
+        // 6.2 Modificar elemenentos colisionados en la
+        // primera posicion
+        hashTable.put("Coronavirus","of War");
+        hashTable.put("Coronao","Vin Dieses");
+
+        Assertions.assertEquals("\n bucket[1] = [Coronavirus, of War] -> [1, Vin Disell] -> [01, Sakuraaaaa] -> [12, Maluma beibe] -> [23, Conejo Bad]" +
+                "\n bucket[10] = [Adios, Feo]" +
+                "\n bucket[12] = [Hola, guapo]" +
+                "\n bucket[13] = [Coronao, Vin Dieses] -> [30, Coronavirusssss] -> [41, Coronaoooo] -> [52, Coronaoooo]",hashTable.toString());
+
+        // 6.3 Modificar elemenentos colisionados en la
+        // ultima posicion
+        hashTable.put("23","Bad Bunny");
+        hashTable.put("52","Emosido Engañado");
+
+        Assertions.assertEquals("\n bucket[1] = [Coronavirus, of War] -> [1, Vin Disell] -> [01, Sakuraaaaa] -> [12, Maluma beibe] -> [23, Bad Bunny]" +
+                "\n bucket[10] = [Adios, Feo]" +
+                "\n bucket[12] = [Hola, guapo]" +
+                "\n bucket[13] = [Coronao, Vin Dieses] -> [30, Coronavirusssss] -> [41, Coronaoooo] -> [52, Emosido Engañado]",hashTable.toString());
     }
 
     @Test
@@ -82,7 +140,7 @@ class HashTableTest {
         hashTable.put("12","");
         hashTable.put("33","");
         hashTable.put("","");
-        hashTable.put("4984375834658634853874536453","");
+        hashTable.put("4984375834658634853874536453","halo");
 
         // 2.1 Get del primer elemento del bucket
         Assertions.assertEquals("",hashTable.get("11"));
@@ -95,8 +153,11 @@ class HashTableTest {
 
         // 2.4 Get de un elemento que tiene la clave y el valor nulos
         Assertions.assertEquals("",hashTable.get(""));
-    }
 
+        // 3. Hacemos get de un elemento con valores y colisionado
+        Assertions.assertEquals("halo",hashTable.get("4984375834658634853874536453"));
+    }
+    /**@AUTHOR TO GO TO HastTable.class @PARAM */
     @Test
     void drop() {
         hashTable.put("11", "");
