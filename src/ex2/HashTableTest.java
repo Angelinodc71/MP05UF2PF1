@@ -1,4 +1,4 @@
-package ex1;
+package ex2;
 
 import ex1.HashTable;
 import org.junit.jupiter.api.Assertions;
@@ -26,7 +26,7 @@ class HashTableTest {
         hashTable.put("Armando Casas","12");
 
         Assertions.assertEquals(16, hashTable.realSize());
-        System.out.println(hashTable);
+
         // 3. En esta tercera prueba se puede ver que al acceder un
         // elemento en concreto, ya sea colisionado o no el realSize
         // no augmenta.
@@ -41,8 +41,6 @@ class HashTableTest {
         hashTable.drop("11");
 
         Assertions.assertEquals(16, hashTable.realSize());
-
-        System.out.println(hashTable);
     }
 
     @Test
@@ -159,7 +157,8 @@ class HashTableTest {
         // 3. Hacemos get de un elemento con valores y colisionado
         Assertions.assertEquals("halo",hashTable.get("4984375834658634853874536453"));
     }
-    /**@AUTHOR TO GO TO HastTable.class @PARAM */
+    /**@AUTHOR
+     * @PARAM TO GO TO HastTable.class @PARAM */
     @Test
     void drop() {
         hashTable.put("11", "");
