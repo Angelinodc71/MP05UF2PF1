@@ -258,7 +258,7 @@ public class HashTable {
         return  foundKeys;
     }
 
-    static void log(String msg) {
+    public static void log(String msg) {
         System.out.println(msg);
     }
 }

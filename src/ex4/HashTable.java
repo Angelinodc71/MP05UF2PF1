@@ -267,7 +267,7 @@ public class HashTable {
      *         out: [key, key, key]
      */
     public ArrayList<String> getCollisionsForKey(String key, int quantity){
-        /*
+        /**
           Main idea:
           alphabet = {0, 1, 2}
 
@@ -291,7 +291,7 @@ public class HashTable {
         int current = newKey.size() -1;
 
         while (foundKeys.size() < quantity){
-            //building current key
+            /**building current key**/
             String currentKey = "";
             for(int i = 0; i < newKey.size(); i++)
                 currentKey += alphabet[newKey.get(i)];
@@ -299,24 +299,24 @@ public class HashTable {
             if(!currentKey.equals(key) && getHash(currentKey) == collision)
                 foundKeys.add(currentKey);
 
-            //increasing the current alphabet key
+            /**increasing the current alphabet key**/
             newKey.set(current, newKey.get(current)+1);
 
-            //overflow over the alphabet on current!
+            /**overflow over the alphabet on current!**/
             if(newKey.get(current) == alphabet.length){
                 int previous = current;
                 do{
-                    //increasing the previous to current alphabet key
+                    /**increasing the previous to current alphabet key**/
                     previous--;
                     if(previous >= 0)  newKey.set(previous, newKey.get(previous) + 1);
                 }
                 while (previous >= 0 && newKey.get(previous) == alphabet.length);
 
-                //cleaning
+                /**cleaning**/
                 for(int i = previous + 1; i < newKey.size(); i++)
                     newKey.set(i, 0);
 
-                //increasing size on underflow over the key size
+                /**increasing size on underflow over the key size**/
                 if(previous < 0) newKey.add(0);
 
                 current = newKey.size() -1;
