@@ -40,22 +40,8 @@ public class HashTable {
                 modificado = false;
             }
             else {
-                while (temp.next != null) {
-                    temp = temp.next;
-                    // Al hacer un put de un elemento colisionado
-                    // que ya existe se debería modificar y no borrar
-                    // el nuevo valor y dejar el anterior, y con esto
-                    // lo que hago es comparar la key de la hashTable con
-                    // la que quiero añadir y modifico el valor
-                    if (temp.key.equals(key)) {
-                        temp.value=hashEntry.value;
-                        // Con la variable modificado puedo saber cuando
-                        // estoy añadiendo un key que ya existe y se esta
-                        // modificando, por lo tanto el size no debería sumar
-                        modificado = false;
-                        return;
-                    }
-                }
+                temp = getHashEntry(key, hashEntry, temp);
+                if (temp == null) return;
                 temp.next = hashEntry;
                 hashEntry.prev = temp;
             }
@@ -65,6 +51,27 @@ public class HashTable {
         if (modificado) {
             size++;
         }
+    }
+    // Haría una extracción de metodos para este while que se repite en
+    // el drop, el unico.
+    private HashEntry getHashEntry(String key, HashEntry hashEntry, HashEntry temp) {
+        while (temp.next != null) {
+            temp = temp.next;
+            // Al hacer un put de un elemento colisionado
+            // que ya existe se debería modificar y no borrar
+            // el nuevo valor y dejar el anterior, y con esto
+            // lo que hago es comparar la key de la hashTable con
+            // la que quiero añadir y modifico el valor.
+            if (temp.key.equals(key)) {
+                temp.value=hashEntry.value;
+                // Con la variable modificado puedo saber cuando
+                // estoy añadiendo un key que ya existe y se esta
+                // modificando, por lo tanto el size no debería sumar.
+                modificado = false;
+                return null;
+            }
+        }
+        return temp;
     }
 
     /**
@@ -93,23 +100,28 @@ public class HashTable {
             HashTable.HashEntry temp = entries[hash];
             // Cuando eliminamos algun elemento, ya se en primera posicion,
             // entre medias borra todoo lo que tiene detras.
-            // La forma de arreglarlo es muy parecida a la del put y consiste
-            // en eliminar el elemento borrando todas las relaciones que tiene
-            // con en anterior y el posterior (.next y .prev), de cierta manera
-            // estamos poniendo el valor del .next en el elemento que queremos eliminar.
             if (temp.key.equals(key)) {
                 if (temp.next != null) temp.next.prev = null;                                //esborrar element únic (no col·lissió)
                     entries[hash]=temp.next;
                     size--;
                     return;
             }
-            while( !temp.key.equals(key)) {
-                temp = temp.next;
-            }
+            // La forma de arreglarlo es muy parecida a la del put y consiste
+            // en eliminar el elemento borrando todas las relaciones que tiene
+            // con en anterior y el posterior (.next y .prev), de cierta manera
+            // estamos poniendo el valor del .next en el elemento que queremos eliminar.
+            temp = getHashEntry(key, temp);
             if(temp.next != null) temp.next.prev = temp.prev;   //esborrem temp, per tant actualitzem l'anterior al següent
             temp.prev.next = temp.next;                         //esborrem temp, per tant actualitzem el següent de l'anterior
             size--;
         }
+    }
+
+    private HashEntry getHashEntry(String key, HashEntry temp) {
+        while( !temp.key.equals(key)) {
+            temp = temp.next;
+        }
+        return temp;
     }
 
     private int getHash(String key) {
