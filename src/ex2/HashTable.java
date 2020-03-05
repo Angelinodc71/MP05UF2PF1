@@ -40,22 +40,8 @@ public class HashTable {
                 modificado = false;
             }
             else {
-                while (temp.next != null) {
-                    temp = temp.next;
-                    // Al hacer un put de un elemento colisionado
-                    // que ya existe se debería modificar y no borrar
-                    // el nuevo valor y dejar el anterior, y con esto
-                    // lo que hago es comparar la key de la hashTable con
-                    // la que quiero añadir y modifico el valor
-                    if (isEquals(key, temp)) {
-                        temp.value=hashEntry.value;
-                        // Con la variable modificado puedo saber cuando
-                        // estoy añadiendo un key que ya existe y se esta
-                        // modificando, por lo tanto el size no debería sumar
-                        modificado = false;
-                        return;
-                    }
-                }
+                temp = getHashEntry(key, hashEntry, temp);
+                if (temp == null) return;
                 temp.next = hashEntry;
                 hashEntry.prev = temp;
             }
@@ -65,6 +51,31 @@ public class HashTable {
         if (modificado) {
             size++;
         }
+    }
+
+    // Haría una extracción de metodos para este while que se repite en
+    // el drop, el unico problema seria que en el put para controlar los
+    // key que son iguales y en vez de añadir, modfique utilizo un boolean
+    // en el que controlo eso. Y por eso a lo mejor la refaccion por metodos
+    // no tendria mucho sentido.
+    private HashEntry getHashEntry(String key, HashEntry hashEntry, HashEntry temp) {
+        while (temp.next != null) {
+            temp = temp.next;
+            // Al hacer un put de un elemento colisionado
+            // que ya existe se debería modificar y no borrar
+            // el nuevo valor y dejar el anterior, y con esto
+            // lo que hago es comparar la key de la hashTable con
+            // la que quiero añadir y modifico el valor
+            if (isEquals(key, temp)) {
+                temp.value=hashEntry.value;
+                // Con la variable modificado puedo saber cuando
+                // estoy añadiendo un key que ya existe y se esta
+                // modificando, por lo tanto el size no debería sumar
+                modificado = false;
+                return null;
+            }
+        }
+        return temp;
     }
 
     /**
@@ -112,13 +123,18 @@ public class HashTable {
                     return;
                 }
             }
-            while( !isEquals(key, temp)) {
-                temp = temp.next;
-            }
+            temp = getHashEntry(key, temp);
             if(isaBoolean(temp.next)) temp.next.prev = temp.prev;   //esborrem temp, per tant actualitzem l'anterior al següent
             temp.prev.next = temp.next;                         //esborrem temp, per tant actualitzem el següent de l'anterior
             size--;
         }
+    }
+
+    private HashEntry getHashEntry(String key, HashEntry temp) {
+        while( !isEquals(key, temp)) {
+            temp = temp.next;
+        }
+        return temp;
     }
 
     private boolean isaBoolean(HashEntry next) {
