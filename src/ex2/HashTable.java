@@ -5,7 +5,7 @@ package ex2;
 
 import java.util.ArrayList;
 
-public class HashTable extends Main {
+public class HashTable {
     private int INITIAL_SIZE = 16;
     private int size = 0;
     private boolean modificado = true;
@@ -33,7 +33,7 @@ public class HashTable extends Main {
             // y dejar el anterior, y con esto lo que hago
             // es comparar la key de la hashTable con la
             // que quiero añadir y modifico el valor (es lo único que cambia)
-            if (temp.key.equals(key)) {
+            if (isEquals(key, temp)) {
                 temp.value=hashEntry.value;
                 // En el caso de estar modificando un valor el
                 // size no deberia incrementarse
@@ -47,7 +47,7 @@ public class HashTable extends Main {
                     // el nuevo valor y dejar el anterior, y con esto
                     // lo que hago es comparar la key de la hashTable con
                     // la que quiero añadir y modifico el valor
-                    if (temp.key.equals(key)) {
+                    if (isEquals(key, temp)) {
                         temp.value=hashEntry.value;
                         // Con la variable modificado puedo saber cuando
                         // estoy añadiendo un key que ya existe y se esta
@@ -75,7 +75,7 @@ public class HashTable extends Main {
         if(entries[hash] != null) {
             HashEntry temp = entries[hash];
 
-            while(!temp.key.equals(key)) {
+            while(!isEquals(key, temp)) {
                 // Al intentar hacer un get de una key que no tiene valor y
                 // es el ultimo elemento colisionado nos da un NullPointer
                 if (temp.next == null) return null;
@@ -86,20 +86,43 @@ public class HashTable extends Main {
         return null;
     }
 
+    // La unica manera de hacer un refactor es de lineas que se
+    // repiten mucho como por ejemplo esta, que es para ver cuando
+    // una key coincide, pues eliminar o modificar una key o valor (dependiendo).
+    private boolean isEquals(String key, HashEntry temp) {
+        return temp.key.equals(key);
+    }
+
     public void drop(String key) {
         int hash = getHash(key);
         if(entries[hash] != null) {
 
             HashEntry temp = entries[hash];
-            while(!temp.key.equals(key))
-                temp = temp.next;
-
-            if(temp.prev == null) entries[hash] = null;             //esborrar element únic (no col·lissió)
-            else{
-                if(temp.next != null) temp.next.prev = temp.prev;   //esborrem temp, per tant actualitzem l'anterior al següent
-                temp.prev.next = temp.next;                         //esborrem temp, per tant actualitzem el següent de l'anterior
+            // Cuando eliminamos algun elemento, ya se en primera posicion,
+            // entre medias borra todoo lo que tiene detras.
+            // La forma de arreglarlo es muy parecida a la del put y consiste
+            // en eliminar el elemento borrando todas las relaciones que tiene
+            // con en anterior y el posterior (.next y .prev), de cierta manera
+            // estamos poniendo el valor del .next en el elemento que queremos eliminar.
+            if (isEquals(key, temp)) {
+                if (temp.next != null) {
+                    temp.next.prev = null;                                //esborrar element únic (no col·lissió)
+                    entries[hash]=temp.next;
+                    size--;
+                    return;
+                }
             }
+            while( !isEquals(key, temp)) {
+                temp = temp.next;
+            }
+            if(isaBoolean(temp.next)) temp.next.prev = temp.prev;   //esborrem temp, per tant actualitzem l'anterior al següent
+            temp.prev.next = temp.next;                         //esborrem temp, per tant actualitzem el següent de l'anterior
+            size--;
         }
+    }
+
+    private boolean isaBoolean(HashEntry next) {
+        return next != null;
     }
 
     private int getHash(String key) {

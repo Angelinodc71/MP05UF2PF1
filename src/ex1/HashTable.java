@@ -83,7 +83,6 @@ public class HashTable {
             }
             return temp.value;
         }
-
         return null;
     }
 
@@ -91,15 +90,25 @@ public class HashTable {
         int hash = getHash(key);
         if(entries[hash] != null) {
 
-            HashEntry temp = entries[hash];
-            while( !temp.key.equals(key))
-                temp = temp.next;
-
-            if(temp.prev == null) entries[hash] = null;             //esborrar element únic (no col·lissió)
-            else{
-                if(temp.next != null) temp.next.prev = temp.prev;   //esborrem temp, per tant actualitzem l'anterior al següent
-                temp.prev.next = temp.next;                         //esborrem temp, per tant actualitzem el següent de l'anterior
+            HashTable.HashEntry temp = entries[hash];
+            // Cuando eliminamos algun elemento, ya se en primera posicion,
+            // entre medias borra todoo lo que tiene detras.
+            // La forma de arreglarlo es muy parecida a la del put y consiste
+            // en eliminar el elemento borrando todas las relaciones que tiene
+            // con en anterior y el posterior (.next y .prev), de cierta manera
+            // estamos poniendo el valor del .next en el elemento que queremos eliminar.
+            if (temp.key.equals(key)) {
+                if (temp.next != null) temp.next.prev = null;                                //esborrar element únic (no col·lissió)
+                    entries[hash]=temp.next;
+                    size--;
+                    return;
             }
+            while( !temp.key.equals(key)) {
+                temp = temp.next;
+            }
+            if(temp.next != null) temp.next.prev = temp.prev;   //esborrem temp, per tant actualitzem l'anterior al següent
+            temp.prev.next = temp.next;                         //esborrem temp, per tant actualitzem el següent de l'anterior
+            size--;
         }
     }
 
